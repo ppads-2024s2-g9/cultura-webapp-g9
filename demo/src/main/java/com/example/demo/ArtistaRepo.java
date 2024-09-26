@@ -3,5 +3,4 @@
 //import org.springframework.stereotype.Repository;
 
 //@Repository
-//public interface ArtistaRepo extends CrudRepository<Artista, Long> {
-}
+//public interface ArtistaRepo extends CrudRepository<Artista, Long> {}
