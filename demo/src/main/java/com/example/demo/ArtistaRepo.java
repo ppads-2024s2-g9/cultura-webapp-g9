@@ -1,7 +1,7 @@
-package com.example.demo;
+//package com.example.demo;
 
-import org.springframework.stereotype.Repository;
+//import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ArtistaRepo extends CrudRepository<Artista, Long> {
+//@Repository
+//public interface ArtistaRepo extends CrudRepository<Artista, Long> {
 }
