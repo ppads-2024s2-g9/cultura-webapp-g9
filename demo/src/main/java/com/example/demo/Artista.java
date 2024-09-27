@@ -1,7 +1,15 @@
 package com.example.demo;
 
- class Artista {
-    
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+ public class Artista {
+    @Id @GeneratedValue
+	private long id;
     private String nome;
     private int anoNascimento;
     private String nomeArtistico;
@@ -13,7 +21,13 @@ package com.example.demo;
     }
 
     // Getters e Setters
-
+    public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+    
     public String getNome() {
         return nome;
     }
