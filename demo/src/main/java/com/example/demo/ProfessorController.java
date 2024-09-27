@@ -1,4 +1,4 @@
-package com.example.professor;
+package com.example.demo;
 
 import java.util.Optional;
 
