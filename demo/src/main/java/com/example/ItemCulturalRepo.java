@@ -1,4 +1,4 @@
-package com.example.itemcultural;
+package com.example;
 
 import org.springframework.data.repository.CrudRepository;
 

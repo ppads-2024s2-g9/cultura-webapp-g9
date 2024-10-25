@@ -2,6 +2,7 @@ package com.example.artista;
 
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ class ArtistaController {
 
 	@GetMapping("/api/artista/{id}")
 	Optional<Artista> getArtista(@PathVariable long id) {
-		return ArtistaRepo.findById(id);
+		return artistaRepo.findById(id);
 	}
 
 	@PostMapping("/api/artista")
