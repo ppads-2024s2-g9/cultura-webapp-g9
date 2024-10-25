@@ -1,4 +1,4 @@
-package com.example.CompanyInvestor;
+package com.example;
 
 import java.util.Optional;
 

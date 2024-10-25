@@ -1,6 +1,5 @@
-package com.example.itemcultural;
+package com.example;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
