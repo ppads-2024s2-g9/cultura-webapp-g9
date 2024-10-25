@@ -1,5 +1,7 @@
 package com.example;
 
-public class CompanyInvestorRepo {
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CompanyInvestorRepo extends JpaRepository<CompanyInvestor, Long> {
 }
