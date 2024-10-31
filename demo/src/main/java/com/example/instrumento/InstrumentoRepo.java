@@ -31,7 +31,7 @@ class InstrumentoController {
 	}
 
 	@GetMapping("/api/instrumento/{id}")
-	Optional<Instrumento> getMusica(@PathVariable long id) {
+	Optional<Instrumento> getInstrumento(@PathVariable long id) {
 		return instrumentoRepo.findById(id);
 	}
 

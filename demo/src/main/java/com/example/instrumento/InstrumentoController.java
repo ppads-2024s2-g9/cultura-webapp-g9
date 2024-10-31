@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 class InstrumentoController {
 
 	@Autowired
-	private InstrumentoRepo instrumentoRepo;
+	private Instrumento instrumentoRepo;
 
 	public InstrumentoController() {
 
