@@ -13,7 +13,7 @@ public class Artista {
 	private long id;
 
 	private String nome;
-	private String anoNasc;
+	private int anoNasc;
 	private String nacionalidade;
 		
 	public Artista() {
