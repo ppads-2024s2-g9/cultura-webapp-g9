@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 class CompanyInvestorController {
 
     @Autowired
-    private CompanyInvestorRepo companyInvestorRepo;
+    private CompanyInvestor companyInvestorRepo;
 
     public CompanyInvestorController() {
     }

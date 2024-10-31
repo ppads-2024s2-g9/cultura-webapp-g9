@@ -1,6 +1,5 @@
 package com.example.instrumento;
 
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,26 +18,28 @@ import org.springframework.web.server.ResponseStatusException;
 class InstrumentoController {
 
 	@Autowired
-	private Instrumento instrumentoRepo;
+	private InstrumentoRepo instrumentoRepo;
 
 	public InstrumentoController() {
 
 	}
 
 	@GetMapping("/api/instrumento")
-	Iterable<Instrumento> getInstrumento(@RequestParam Optional<Long> albumId) {
+	Iterable<Instrumento> getInstrumento(@RequestParam Optional<Long> instrumentoId) {
+
 		return instrumentoRepo.findAll();
+
 	}
 
 	@GetMapping("/api/instrumento/{id}")
-	Optional<Instrumento> getMusica(@PathVariable long id) {
+	Optional<Instrumento> getInstrumento(@PathVariable long id) {
 		return instrumentoRepo.findById(id);
 	}
 
 	@PostMapping("/api/instrumento")
-	Instrumento createInstrumento(@RequestBody Instrumento m) {
-		Instrumento createdInstrumento = instrumentoRepo.save(m);
-		return createdInstrumento;
+	Instrumento createInstrumento(@RequestBody Instrumento p) {
+		Instrumento createdinstrumento = instrumentoRepo.save(p);
+		return createdinstrumento;
 	}
 
 	@PutMapping("/api/instrumento/{instrumentoId}")
