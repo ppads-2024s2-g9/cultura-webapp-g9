@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+
 @Entity
 @DiscriminatorValue("CO_INVESTOR")
 @Data
