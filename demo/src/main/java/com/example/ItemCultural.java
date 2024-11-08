@@ -1,22 +1,25 @@
 package com.example;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Column;
 import java.time.Instant;
 
-@MappedSuperclass
-public abstract class ItemCultural {
-    
-    @Id
-    @GeneratedValue
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
+@Data
+@EqualsAndHashCode(callSuper = true)
+public abstract class ItemCultural extends AbstractEntity {
+
     private long id;
 
-    @Column(name = "created_at")
     private Instant createdAt;
-
-    @Column(name = "updated_at")
     private Instant updatedAt;
 
     public ItemCultural() {
@@ -25,7 +28,7 @@ public abstract class ItemCultural {
         this.updatedAt = Instant.now();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
