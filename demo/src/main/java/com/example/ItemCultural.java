@@ -1,22 +1,27 @@
 package com.example;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import java.time.Instant;
 
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
+@Table(name = "item_cultural")  // Aqui é onde você define a tabela
 public abstract class ItemCultural {
-    
+
     @Id
     @GeneratedValue
     private long id;
 
-    @Column(name = "created_at")
     private Instant createdAt;
-
-    @Column(name = "updated_at")
     private Instant updatedAt;
 
     public ItemCultural() {

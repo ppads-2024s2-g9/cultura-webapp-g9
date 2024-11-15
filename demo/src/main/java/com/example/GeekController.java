@@ -1,67 +1,60 @@
 package com.example;
 
-import java.time.Instant;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/geeks")
+@RequestMapping("/geeks")
 public class GeekController {
 
-    private final GeekRepository geekRepository;
-
     @Autowired
-    public GeekController(GeekRepository geekRepository) {
-        this.geekRepository = geekRepository;
-    }
+    private GeekRepository geekRepository;  // Repositório diretamente aqui
 
-    @GetMapping("/api/geeks")
-    Iterable<Geek> getGeeks(@RequestParam Optional<Long> geekId) {
-        return geekRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Geek> getGeek(@PathVariable Long id) {
-        return geekRepository.findById(id)
-            .map(geek -> ResponseEntity.ok(geek))
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Geek não encontrado com id " + id));
-    }
-
+    // Criar um novo Geek
     @PostMapping
     public ResponseEntity<Geek> createGeek(@RequestBody Geek geek) {
-        geek.setCreatedAt(Instant.now());
-        Geek createdGeek = geekRepository.save(geek);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdGeek);
+        Geek savedGeek = geekRepository.save(geek);  // Salvando diretamente no repositório
+        return new ResponseEntity<>(savedGeek, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{geekId}")
-    public ResponseEntity<Geek> updateGeek(@RequestBody Geek geekRequest, @PathVariable Long geekId) {
-        return geekRepository.findById(geekId)
-            .map(geekToUpdate -> {
-                // Atualize os campos necessários do geekToUpdate com os dados de geekRequest
-                geekToUpdate.setNome(geekRequest.getNome());
-                geekToUpdate.setEmail(geekRequest.getEmail());
-                geekToUpdate.setBio(geekRequest.getBio());
-                geekToUpdate.setUpdatedAt(Instant.now()); // Supondo que você tenha esse campo
-                Geek updatedGeek = geekRepository.save(geekToUpdate);
-                return ResponseEntity.ok(updatedGeek);
-            })
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Erro ao alterar dados do geek com id " + geekId));
+    // Buscar todos os geeks
+    @GetMapping
+    public ResponseEntity<List<Geek>> getAllGeeks() {
+        List<Geek> geeks = geekRepository.findAll();  // Buscando todos os geeks
+        return new ResponseEntity<>(geeks, HttpStatus.OK);
     }
 
+    // Buscar Geek por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Geek> getGeekById(@PathVariable Long id) {
+        Optional<Geek> geek = geekRepository.findById(id);  // Buscando geek por ID
+        return geek.map(ResponseEntity::ok)
+                   .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    // Atualizar um Geek
+    @PutMapping("/{id}")
+    public ResponseEntity<Geek> updateGeek(@PathVariable Long id, @RequestBody Geek geek) {
+        if (!geekRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Se não encontrar o ID, retorna 404
+        }
+        geek.setId(id);  // Define o ID no objeto antes de salvar
+        Geek updatedGeek = geekRepository.save(geek);  // Atualiza o Geek no repositório
+        return ResponseEntity.ok(updatedGeek);  // Retorna o Geek atualizado
+    }
+
+    // Excluir um Geek
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGeek(@PathVariable Long id) {
-        if (geekRepository.existsById(id)) {
-            geekRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Geek não encontrado com id " + id);
+        if (!geekRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Se não encontrar o ID, retorna 404
         }
+        geekRepository.deleteById(id);  // Exclui o Geek do repositório
+        return ResponseEntity.noContent().build();  // Retorna 204 No Content
     }
 }
