@@ -2,8 +2,7 @@ package com.example;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import com.example.demo.entities.geek.Geek;
-import com.example.demo.entities.itemCultural.ItemCultural;
+
 import lombok.Data;
 
 @Entity

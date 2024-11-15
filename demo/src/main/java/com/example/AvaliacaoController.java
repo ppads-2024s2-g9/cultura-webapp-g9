@@ -56,3 +56,4 @@ public class AvaliacaoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 }
+
