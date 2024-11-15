@@ -1,4 +1,4 @@
-package com.example.CompanyInvestor;
+package com.example;
 
 import java.util.Optional;
 
@@ -18,19 +18,19 @@ import org.springframework.web.server.ResponseStatusException;
 class CompanyInvestorController {
 
     @Autowired
-    private CompanyInvestor companyInvestorRepo;
+    private InvestorRepository companyInvestorRepo;
 
     public CompanyInvestorController() {
     }
 
     @GetMapping("/api/company-investors")
     Iterable<CompanyInvestor> getCompanyInvestors(@RequestParam Optional<String> lei) {
-        return companyInvestorRepo.findAll();
+        return companyInvestorRepo.findCompanyInvestors();
     }
 
     @GetMapping("/api/company-investors/{id}")
     Optional<CompanyInvestor> getCompanyInvestor(@PathVariable long id) {
-        return companyInvestorRepo.findById(id);
+        return companyInvestorRepo.findCompanyInvestorById(id);
     }
 
     @PostMapping("/api/company-investors")
@@ -40,7 +40,7 @@ class CompanyInvestorController {
 
     @PutMapping("/api/company-investors/{id}")
     Optional<CompanyInvestor> updateCompanyInvestor(@RequestBody CompanyInvestor companyInvestorRequest, @PathVariable long id) {
-        Optional<CompanyInvestor> opt = companyInvestorRepo.findById(id);
+        Optional<CompanyInvestor> opt = companyInvestorRepo.findCompanyInvestorById(id);
         if (opt.isPresent()) {
             if (companyInvestorRequest.getId() == id) {
                 return Optional.of(companyInvestorRepo.save(companyInvestorRequest));
