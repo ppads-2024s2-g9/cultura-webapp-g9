@@ -168,17 +168,20 @@
         }
         
         function criarAvaliacao() {
-            const dadosAvaliacao = {
-                'nota': txtNota.value,
-                'comentario': txtComentario.value,
-                'geek': { 'id': txtGeekId.value },
-                'itemCultural': { 'id': txtItemCulturalId.value }
-            };
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = 'Erro ao criar nova avaliação (código ' + error.message + ')'; 
-            }
-            asyncCriarAvaliacao(dadosAvaliacao, inicializar, errorHandler);
-        }
+         const dadosAvaliacao = {
+        'nota': txtNota.value,
+        'comentario': txtComentario.value,
+        'geek': { 'id': txtGeekId.value },
+        'itemCultural': { 'id': txtItemCulturalId.value }
+        };
+
+    const errorHandler = function(error) { 
+        paragrafoMensagem.textContent = 'Erro ao criar nova avaliação (código ' + error.message + ')'; 
+    }
+
+    asyncCriarAvaliacao(dadosAvaliacao, inicializar, errorHandler);
+}
+
         
         function alterarAvaliacao() {
             const errorHandler = function(error) {

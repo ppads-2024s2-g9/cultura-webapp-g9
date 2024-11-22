@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Atores</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
+    </head>
+
+    <body>
+        <h1>Gerenciamento de Atores</h1>
+
+        <button onclick="window.location.href='artista.html'">Atores</button>
+
+        <table>    
+            <tr> <td>ID:</td> <td><input type="text" id="txtId"></td> </tr>
+            <tr> <td>Nome:</td> <td><input type="text" id="txtNome"></td> </tr>
+            <tr> <td>Idade:</td> <td><input type="text" id="txtIdade"></td> </tr>
+            <tr> <td>Genero:</td> <td><input type="text" id="txtGenero"></td> </tr>
+            <tr> <td>Nacionalidade:</td> <td><input type="text" id="txtNasc"></td> </tr>
+            <tr> <td>Data de nascimento:</td> <td><input type="text" id="txtData"></td> </tr>
+            <tr><td></td><td>
+                <input type="button" value="Novo" onclick="novoAtor()" id="btnNovo">
+                <input type="button" value="Salvar" onclick="salvarAtor()" id="btnSalvar">
+                <input type="button" value="Apagar" onclick="apagarAtor()" id="btnApagar">
+                <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
+            </td></tr>
+        </table> 
+
+        <p style="font-weight:bold" id="paragrafoMensagem"></p>
+
+        <table>    
+            <tr><th>ID</th><th>Nome</th><th>Idade</th><th>Genero</th><th>Data de Nascimento</th><th>Nacionalidade</th></tr>
+            <tbody id="corpoTabelaAtores"> </tbody>
+        </table>
+
+
+        <script>
+
+            var token = localStorage.getItem('token');
+            if (!token) {
+                window.location.replace("/html/login.html");
+            }
+            const corpoTabela = document.querySelector('#corpoTabelaAtores');
+            const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
+
+            const txtNome = document.querySelector('#txtNome');
+            const txtIdade = document.querySelector('#txtIdade');
+            const txtGenero = document.querySelector('#txtGenero');
+            const txtData = document.querySelector('#txtData');
+            const txtNasc = document.querySelector('#txtNasc');
+
+            const btnNovo = document.querySelector('#btnNovo');
+            const btnSalvar = document.querySelector('#btnSalvar');
+            const btnApagar = document.querySelector('#btnApagar');
+            const btnCancelar = document.querySelector('#btnCancelar');
+            var criandoNovoAtor = false;
+
+            inicializar();
+
+            function inicializar() {
+                criandoNovoAtor = false;
+                paragrafoMensagem.innerHTML = 'Pressione o botão Novo ou selecione um ator da lista:'
+                txtNome.value = '';
+                txtIdade.value = '';
+                txtGenero.value = '';
+                txtData.value = '';
+                txtNasc.value = '';
+                txtId.value = '';
+
+                txtNome.disabled = true;
+                txtIdade.disabled = true;
+                txtGenero.disabled = true;
+                txtData.disabled = true;
+                txtNasc.disabled = true;
+                txtId.disabled = true;
+
+                btnNovo.disabled = false;
+                btnSalvar.disabled = true;
+                btnApagar.disabled = true;
+                btnCancelar.disabled = true;
+                listarTodosAtores();            
+            }
+
+async function listarTodosAtores() {
+    fetch('/api/atores' ,{
+        method: 'GET',
+        headers: {'Authorization': 'Bearer ' + token }
+    })
+    .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
+    .then(resposta => resposta.json())
+    .then(json => preencherTabela(json))
+    .catch(function(error) {
+        paragrafoMensagem.innerHTML = "Erro ao listar Atores (código " + error.message + ")";
+    });
+}
+
+function preencherTabela(atores) {
+    var linhasTabela = '';
+    var n = atores.length;
+    for (var i=0; i<n; i++) {
+        var t = atores[i];
+        linhasTabela += 
+                    `<tr><td><a href="javascript:void(0)" onclick="selecionarAtor('${t.id}','${t.nome}','${t.idade}','${t.genero}','${t.nacionalidade}','${t.dataDeNascimento}')">` 
+                    + t.id     + '</a></td>' + 
+                    '<td>' + t.nome   + '</td>' +
+                    '<td>' + t.idade + '</td>' +
+                    '<td>' + t.genero + '</td>' +
+                    '<td>' + t.nacionalidade + '</td>' +
+                    '<td>' + t.dataDeNascimento + '</td></tr>\n';
+            }
+            corpoTabela.innerHTML = linhasTabela;
+    }
+
+            function novoAtor() {
+                paragrafoMensagem.innerHTML = 'Preencha os dados do novo Ator...';
+                criandoNovoAtor= true;
+
+                txtNome.value = '';
+                txtIdade.value = '';
+                txtGenero.value = '';
+                txtData.value = '';
+                txtNasc.value = '';
+                txtId.value = '';
+
+                txtId.disabled = true;
+                txtNome.disabled = false;
+                txtIdade.disabled = false;
+                txtGenero.disabled = false;
+                txtData.disabled = false;
+                txtNasc.disabled = false;
+
+                btnNovo.disabled = true;
+                btnSalvar.disabled = false;
+                btnApagar.disabled = true;
+                btnCancelar.disabled = false;
+            }
+
+async function salvarAtor() {
+    if (criandoNovoAtor) {
+        fetch('/api/atores', {
+            method: 'POST',
+            body: JSON.stringify({
+                'nome': txtNome.value,
+                'idade': txtIdade.value,
+                'genero': txtGenero.value,
+                'nacionalidade': txtData.value,
+                'dataDeNascimento': txtNasc.value
+            }),
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
+        .then(resposta => resposta.json())
+        .then(json => inicializar())
+        .catch(function(error) {
+            paragrafo.innerHTML = "Erro ao criar Ator (código " + error.message + ")";
+        });  
+    }
+    else {
+        fetch('/api/atores/' + txtId.value, {
+            method: 'PUT',
+            body: JSON.stringify({
+                'id': txtId.value,
+                'nome': txtNome.value,
+                'idade': txtIdade.value,
+                'genero': txtGenero.value,
+                'nacionalidade': txtData.value,
+                'dataDeNascimento': txtNasc.value   
+            }),
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
+        .then(resposta => resposta.json())
+        .then(json => inicializar())
+        .catch(function(error) {
+            paragrafo.innerHTML = "Erro ao alterar Ator (código " + error.message + ")";
+        });         
+    }  
+}
+
+    function cancelarEdicao() {
+        inicializar();
+    }
+
+    function selecionarAtor(id, nome, idade, genero, nacionalidade, dataDeNascimento) {
+        paragrafoMensagem.innerHTML = 'Altere e salve os dados do Ator, ou então apague o registro do Ator.'
+
+        txtId.value = id;
+        txtNome.value = nome;
+        txtIdade.value = idade;
+        txtGenero.value = genero;
+        txtNasc.value = nacionalidade;
+        txtData.value = dataDeNascimento;
+
+        txtId.disabled = true;
+        txtNome.disabled = false;
+        txtIdade.disabled = false;
+        txtGenero.disabled = false;
+        txtData.disabled = false;
+        txtNasc.disabled = false;
+
+        btnNovo.disabled = true;
+        btnSalvar.disabled = false;
+        btnApagar.disabled = false;
+        btnCancelar.disabled = false;  
+    }
+
+    async function apagarAtor() {
+        fetch('/api/atores/' + txtId.value, {
+            method: 'DELETE',
+            headers: {'Authorization': 'Bearer ' + token }
+        })
+        .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
+        .then(resposta => inicializar())
+        .catch(function(error) {
+            paragrafo.innerHTML = "Erro ao apagar Ator (código " + error.message + ")";
+        });
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.replace("/html/login.html");
+    }
+
+        </script>
+    </body>
+</html>	        

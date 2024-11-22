@@ -1,4 +1,4 @@
-package br.mackenzie.webapp;
+package com.example.security;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

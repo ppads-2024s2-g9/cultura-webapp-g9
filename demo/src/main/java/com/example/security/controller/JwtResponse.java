@@ -1,4 +1,4 @@
-package br.mackenzie.webapp.security.controller;
+package com.example.security.controller;
 
 import java.io.Serializable;
 

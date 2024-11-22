@@ -1,4 +1,5 @@
-package br.mackenzie.webapp.security.config;
+package com.example.security.config;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import br.mackenzie.webapp.security.filter.JwtFilter;
-import br.mackenzie.webapp.security.service.UserService;
+import com.example.security.filter.JwtFilter;
+import com.example.security.service.UserService;
 
 @Configuration
 @EnableWebSecurity

@@ -1,4 +1,5 @@
-package br.mackenzie.webapp.security.model;
+package com.example.security.model;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

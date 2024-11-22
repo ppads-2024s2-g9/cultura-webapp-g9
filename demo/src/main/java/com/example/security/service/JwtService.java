@@ -1,4 +1,5 @@
-package br.mackenzie.webapp.security.service;
+package com.example.security.service;
+
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

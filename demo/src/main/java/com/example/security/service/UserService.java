@@ -1,4 +1,4 @@
-package br.mackenzie.webapp.security.service;
+package com.example.security.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -6,9 +6,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import br.mackenzie.webapp.security.model.User;
-import br.mackenzie.webapp.security.model.UserPrincipal;
-import br.mackenzie.webapp.security.repo.UserRepo;
+import com.example.security.model.User;
+import com.example.security.model.UserPrincipal;
+import com.example.security.repo.UserRepo;
 
 import java.util.Optional;
 
