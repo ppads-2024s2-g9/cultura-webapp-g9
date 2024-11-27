@@ -4,6 +4,7 @@ spring.datasource.url=jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:6543
 spring.datasource.driverClassName=org.postgresql.Driver
 spring.datasource.username=postgres.dcuggkwtzhgulnhufyrp
 spring.datasource.password=for1inmyl.ife
+spring.jpa.hibernate.ddl-auto=create
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 GRUPO:

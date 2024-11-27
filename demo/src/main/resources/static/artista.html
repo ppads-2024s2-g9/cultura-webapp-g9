@@ -13,8 +13,8 @@
     <table id="tabelaFormulario">    
         <tr> <td>ID:</td> <td><input type="text" id="txtId"></td> </tr>
         <tr> <td>Nome:</td> <td><input type="text" id="txtNome"></td> </tr>
-        <tr> <td>Matrícula:</td> <td><input type="text" id="txtMatricula"></td> </tr>
-        <tr> <td>Área:</td> <td><input type="text" id="txtArea"></td> </tr> 
+        <tr> <td>Ano Nascimento:</td> <td><input type="text" id="txtAnoNascimento"></td> </tr>
+        <tr> <td>Nacionalidade:</td> <td><input type="text" id="txtNacionalidade"></td> </tr> 
         <tr><td></td><td>
             <input type="button" value="Salvar" onclick="salvarArtista()" id="btnSalvar">
             <input type="button" value="Apagar" onclick="apagarArtista()" id="btnApagar">
@@ -22,12 +22,11 @@
         </td></tr>
     </table> 
     
-    
     <p style="font-weight:bold" id="paragrafoMensagem"></p>
     
     <table id="tabelaArtista">  
         <tr><td><input type="button" value="Novo" onclick="novoArtista()" id="btnNovo"></td> <td></td> <td></td></tr>
-        <tr> <th>ID</th> <th>Nome</th> <th>Matrícula</th> <th>Área</th> </tr>
+        <tr> <th>ID</th> <th>Nome</th> <th>Ano Nascimento</th> <th>Nacionalidade</th> </tr>
         <tbody id="corpoTabelaArtista"> </tbody>
     </table>
     
@@ -38,8 +37,8 @@
         const corpoTabela = document.querySelector('#corpoTabelaArtista');
         const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
         const txtNome = document.querySelector('#txtNome');
-        const txtMatricula = document.querySelector('#txtMatricula');
-        const txtArea = document.querySelector('#txtArea');
+        const txtAnoNascimento = document.querySelector('#txtAnoNascimento');
+        const txtNacionalidade = document.querySelector('#txtNacionalidade');
         const txtId = document.querySelector('#txtId');
         
         const btnNovo = document.querySelector('#btnNovo');
@@ -55,12 +54,12 @@
             paragrafoMensagem.textContent = 'Pressione o botão Novo ou selecione um artista da lista:'
             txtId.value = '';
             txtNome.value = '';
-            txtMatricula.value = '';
-            txtArea.value = '';
+            txtAnoNascimento.value = '';
+            txtNacionalidade.value = '';
             txtId.disabled = true;
             txtNome.disabled = true;
-            txtMatricula.disabled = true;
-            txtArea.disabled = true;
+            txtAnoNascimento.disabled = true;
+            txtNacionalidade.disabled = true;
             
             btnNovo.disabled = false;
             btnSalvar.disabled = true;
@@ -75,7 +74,7 @@
 
         function listarTodosArtista() {
             const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao listar artistaes (código " + error.message + ")";
+                paragrafoMensagem.textContent = "Erro ao listar artistas (código " + error.message + ")";
             }
             asyncLerProfs(preencherTabela, errorHandler);
         }
@@ -88,8 +87,8 @@
                 let linha = corpoTabela.insertRow();
                 let celulaId = linha.insertCell();
                 let celulaNome = linha.insertCell();
-                let celulaMatricula = linha.insertCell();
-                let celulaArea = linha.insertCell();
+                let celulaAnoNascimento = linha.insertCell();
+                let celulaNacionalidade = linha.insertCell();
                 
                 let alink = document.createElement('a');
                 alink.textContent = p.id;
@@ -97,8 +96,8 @@
                 alink.onclick =  function() { selecionarArtista(p.id); };
                 celulaId.appendChild(alink);
                 celulaNome.textContent = p.nome;
-                celulaMatricula.textContent = p.matricula;
-                celulaArea.textContent = p.area;
+                celulaAnoNascimento.textContent = p.anoNascimento;
+                celulaNacionalidade.textContent = p.nacionalidade;
             }
         }
         
@@ -114,13 +113,13 @@
             paragrafoMensagem.textContent = 'Altere e salve os dados do artista, ou então apague o registro do artista.'
             txtId.value = artista.id;
             txtNome.value = artista.nome;
-            txtMatricula.value = artista.matricula;
-            txtArea.value = artista.area;
+            txtAnoNascimento.value = artista.anoNascimento;
+            txtNacionalidade.value = artista.nacionalidade;
             
             txtId.disabled = true;
             txtNome.disabled = false;
-            txtMatricula.disabled = false;
-            txtArea.disabled = false;
+            txtAnoNascimento.disabled = false;
+            txtNacionalidade.disabled = false;
             
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
@@ -137,13 +136,13 @@
             
             txtId.value = '';
             txtNome.value = '';
-            txtMatricula.value = '';
-            txtArea.value = '';
+            txtAnoNascimento.value = '';
+            txtNacionalidade.value = '';
             
             txtId.disabled = true;
             txtNome.disabled = false;
-            txtMatricula.disabled = false;
-            txtArea.disabled = false;
+            txtAnoNascimento.disabled = false;
+            txtNacionalidade.disabled = false;
             
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
@@ -166,12 +165,13 @@
         function criarArtista() {
             const dadosArtista = {
                 'nome': txtNome.value,
-                'matricula': txtMatricula.value,
-                'area': txtArea.value
+                'anoNascimento': txtAnoNascimento.value,  // Alterado para anoNascimento
+                'nacionalidade': txtNacionalidade.value   // Alterado para nacionalidade
             };
             const errorHandler = function(error) { 
                 paragrafoMensagem.textContent = 'Erro ao criar novo artista (código ' + error.message + ')'; 
             }
+            console.log('Dados enviados:', dadosArtista);
             asyncCriarProf(dadosArtista, inicializar, errorHandler);
         }
         
@@ -182,8 +182,8 @@
             const dadosArtista = {
                 'id': txtId.value,
                 'nome': txtNome.value,
-                'matricula': txtMatricula.value,
-                'area': txtArea.value
+                'anoNascimento': txtAnoNascimento.value,  // Alterado para anoNascimento
+                'nacionalidade': txtNacionalidade.value   // Alterado para nacionalidade
             };
             asyncAlterarProf(dadosArtista, inicializar, errorHandler);        	
         }

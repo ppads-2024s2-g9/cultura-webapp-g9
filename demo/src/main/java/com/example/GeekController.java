@@ -1,60 +1,62 @@
 package com.example;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import java.time.Instant;
 
 @RestController
-@RequestMapping("/geeks")
-public class GeekController {
+class GeekController {
 
     @Autowired
-    private GeekRepository geekRepository;  // Repositório diretamente aqui
+    private GeekRepository geekRepo;
 
-    // Criar um novo Geek
-    @PostMapping
+    public GeekController() {
+    }
+
+    @GetMapping("/api/geeks")
+    Iterable<Geek> getGeeks(@RequestParam Optional<Long> faculdadeId) {
+        return geekRepo.findAll();
+    }
+
+    @GetMapping("/api/geeks/{id}")
+    Optional<Geek> getGeek(@PathVariable long id) {
+        return geekRepo.findById(id);
+    }
+
+    @PostMapping("/api/geeks")
     public ResponseEntity<Geek> createGeek(@RequestBody Geek geek) {
-        Geek savedGeek = geekRepository.save(geek);  // Salvando diretamente no repositório
-        return new ResponseEntity<>(savedGeek, HttpStatus.CREATED);
+        geek.setCreatedAt(Instant.now());
+        Geek createdGeek = geekRepo.save(geek);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdGeek);
     }
 
-    // Buscar todos os geeks
-    @GetMapping
-    public ResponseEntity<List<Geek>> getAllGeeks() {
-        List<Geek> geeks = geekRepository.findAll();  // Buscando todos os geeks
-        return new ResponseEntity<>(geeks, HttpStatus.OK);
-    }
 
-    // Buscar Geek por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Geek> getGeekById(@PathVariable Long id) {
-        Optional<Geek> geek = geekRepository.findById(id);  // Buscando geek por ID
-        return geek.map(ResponseEntity::ok)
-                   .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-    // Atualizar um Geek
-    @PutMapping("/{id}")
-    public ResponseEntity<Geek> updateGeek(@PathVariable Long id, @RequestBody Geek geek) {
-        if (!geekRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Se não encontrar o ID, retorna 404
+    @PutMapping("/api/geeks/{geekId}")
+    Optional<Geek> updateGeek(@RequestBody Geek geekRequest, @PathVariable long geekId) {
+        Optional<Geek> opt = geekRepo.findById(geekId);
+        if (opt.isPresent()) {
+            if (geekRequest.getId() == geekId) {
+                return Optional.of(geekRepo.save(geekRequest));
+            }
         }
-        geek.setId(id);  // Define o ID no objeto antes de salvar
-        Geek updatedGeek = geekRepository.save(geek);  // Atualiza o Geek no repositório
-        return ResponseEntity.ok(updatedGeek);  // Retorna o Geek atualizado
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Erro ao alterar dados do geek com id " + geekId);
     }
 
-    // Excluir um Geek
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGeek(@PathVariable Long id) {
-        if (!geekRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Se não encontrar o ID, retorna 404
-        }
-        geekRepository.deleteById(id);  // Exclui o Geek do repositório
-        return ResponseEntity.noContent().build();  // Retorna 204 No Content
+    @DeleteMapping(value = "/api/geeks/{id}")
+    void deleteGeek(@PathVariable long id) {
+        geekRepo.deleteById(id);
     }
 }
