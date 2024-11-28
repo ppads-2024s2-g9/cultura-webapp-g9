@@ -28,8 +28,8 @@
             <td><input type="text" id="txtGeek"></td> 
         </tr>
         <tr> 
-            <td>Data de criação:</td> 
-            <td><input type="number" id="txtItemCultural" min="0" max="13"></td> 
+            <td>Item Cultural:</td> 
+            <td><input type="text" id="txtItemCultural"></td> 
         </tr> 
         <tr>
             <td></td>
@@ -57,17 +57,14 @@
             <th>Nome</th> 
             <th>Ano de Nascimento</th> 
             <th>Email</th> 
-            <th>Gênero Musical</th> 
+            <th>Item Cultural</th>
+            
         </tr>
         <tbody id="corpoTabelaAvaliacao"></tbody>
     </table>
     
     <script>
 
-            var token = localStorage.getItem('token');
-            if (!token) {
-                window.location.replace("/html/login.html");
-            }
         // Variáveis globais
         let avaliacoes = []; // Lista para armazenar as avaliações
         let criandoNovaAvaliacao = false;
@@ -216,10 +213,7 @@
             inicializar();
         }
 
-        function logout() {
-            localStorage.removeItem('token');
-            window.location.replace("/html/login.html");
-        }        
+             
 
         // Função para cancelar edição ou criação
         function cancelarEdicao() {

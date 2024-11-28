@@ -54,7 +54,7 @@
         </tr>
         <tr> 
             <th>ID</th> 
-            <th>Títuçp</th> 
+            <th>Título</th> 
             <th>Artista</th> 
             <th>Album</th> 
             <th>Ano de lançamento</th> 
@@ -152,7 +152,7 @@
 
         // Função para salvar uma avaliação (nova ou existente)
         function salvarAvaliacao() {
-            const nota = parseFloat(txtNota.value);
+            const nota = txtNota.value.trim();
             const comentario = txtComentario.value.trim();
             const geek = txtGeek.value.trim();
             const itemCultural = txtItemCultural.value.trim();

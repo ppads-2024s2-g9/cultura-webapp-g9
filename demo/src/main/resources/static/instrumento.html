@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Artistas</title>
+    <title>Gerenciamento de Instrumentos</title>
     <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
 <body>
@@ -54,8 +54,8 @@
         </tr>
         <tr> 
             <th>ID</th> 
-            <th>Nome</th> 
             <th>Familia</th> 
+            <th>Nome</th> 
             <th>Material</th> 
             <th>Ano de criação</th> 
         </tr>
@@ -152,7 +152,7 @@
 
         // Função para salvar uma avaliação (nova ou existente)
         function salvarAvaliacao() {
-            const nota = parseFloat(txtNota.value);
+            const nota = txtNota.value.trim();
             const comentario = txtComentario.value.trim();
             const geek = txtGeek.value.trim();
             const itemCultural = txtItemCultural.value.trim();
