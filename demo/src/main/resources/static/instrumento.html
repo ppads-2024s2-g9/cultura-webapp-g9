@@ -1,67 +1,104 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Instrumento</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Instrumentos</title>
     <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
-
 <body>
-    <h1>Gerenciamento de Instrumento</h1>
+    <h1>Gerenciamento de Instrumentos</h1>
 
-    <table id="tabelaFormulario">    
-        <tr> <td>ID:</td> <td><input type="text" id="txtId"></td> </tr>
-        <tr> <td>Nome:</td> <td><input type="text" id="txtNome"></td> </tr>
-        <tr> <td>Familia:</td> <td><input type="text" id="txtFamilia"></td> </tr>
-        <tr> <td>Material:</td> <td><input type="text" id="txtMaterial"></td> </tr> 
-
-        <tr><td></td><td>
-            <input type="button" value="Salvar" onclick="salvarInstrumento()" id="btnSalvar">
-            <input type="button" value="Apagar" onclick="apagarInstrumento()" id="btnApagar">
-            <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
-        </td></tr>
+    <!-- Formulário -->
+    <table id="tabelaFormulario" style="display: none;">    
+        <tr> 
+            <td>ID:</td> 
+            <td><input type="text" id="txtId" disabled></td> 
+        </tr>
+        <tr> 
+            <td>Nome:</td> 
+            <td><input type="text" id="txtComentario"></td> 
+        </tr>
+        <tr> 
+            <td>Familia:</td> 
+            <td><input type="text" id="txtNota"></td> 
+        </tr>
+        <tr> 
+            <td>Material:</td> 
+            <td><input type="text" id="txtGeek"></td> 
+        </tr>
+        <tr> 
+            <td>Ano de criação:</td> 
+            <td><input type="number" id="txtItemCultural" min="0" max="13"></td> 
+        </tr> 
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" value="Salvar" onclick="salvarAvaliacao()" id="btnSalvar">
+                <input type="button" value="Apagar" onclick="apagarAvaliacao()" id="btnApagar">
+                <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
+            </td>
+        </tr>
     </table> 
     
-    
+    <!-- Mensagem -->
     <p style="font-weight:bold" id="paragrafoMensagem"></p>
     
-    <table id="tabelaIntrumento">  
-        <tr><td><input type="button" value="Novo" onclick="novoIntrumento()" id="btnNovo"></td> <td></td> <td></td></tr>
-        <tr> <th>ID</th> <th>Nome</th> <th>Material</th> <th>Família</th> </tr>
-        <tbody id="corpoTabelaInstrumento"> </tbody>
+    <!-- Tabela de Avaliações -->
+    <table id="tabelaAvaliacao">  
+        <tr>
+            <td>
+                <input type="button" value="Novo" onclick="novaAvaliacao()" id="btnNovo">
+            </td>
+            <td></td> <td></td>
+        </tr>
+        <tr> 
+            <th>ID</th> 
+            <th>Familia</th> 
+            <th>Nome</th> 
+            <th>Material</th> 
+            <th>Ano de criação</th> 
+        </tr>
+        <tbody id="corpoTabelaAvaliacao"></tbody>
     </table>
     
-    <script src="Instrumento-rest.js"></script>
     <script>
-        const tabelaInstrumento = document.querySelector('#tabelaInstrumento');
+        // Variáveis globais
+        let avaliacoes = []; // Lista para armazenar as avaliações
+        let criandoNovaAvaliacao = false;
+
+        // Elementos do DOM
+        const tabelaAvaliacao = document.querySelector('#tabelaAvaliacao');
         const tabelaFormulario = document.querySelector('#tabelaFormulario');
-        const corpoTabela = document.querySelector('#corpoTabelaInstrumento');
+        const corpoTabela = document.querySelector('#corpoTabelaAvaliacao');
         const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
-        const txtNome = document.querySelector('#txtNome');
-        const txtMaterial = document.querySelector('#txtMaterial');
-        const txtFamilia = document.querySelector('#txtFamilia');
+        const txtNota = document.querySelector('#txtNota');
+        const txtComentario = document.querySelector('#txtComentario');
+        const txtGeek = document.querySelector('#txtGeek');
+        const txtItemCultural = document.querySelector('#txtItemCultural');
         const txtId = document.querySelector('#txtId');
-        
         const btnNovo = document.querySelector('#btnNovo');
         const btnSalvar = document.querySelector('#btnSalvar');
         const btnApagar = document.querySelector('#btnApagar');
         const btnCancelar = document.querySelector('#btnCancelar');
-        var criandoNovoInstrumento = false;
-        
+
         inicializar();
 
+        // Função para inicializar o estado da página
         function inicializar() {
-            criandoNovoInstrumento = false;
-            paragrafoMensagem.textContent = 'Pressione o botão Novo ou selecione um Instrumento da lista:'
+            criandoNovaAvaliacao = false;
+            paragrafoMensagem.textContent = 'Pressione o botão Novo:';
             txtId.value = '';
-            txtNome.value = '';
-            txtMaterial.value = '';
-            txtFamilia.value = '';
+            txtNota.value = '';
+            txtComentario.value = '';
+            txtGeek.value = '';
+            txtItemCultural.value = '';
+            
             txtId.disabled = true;
-            txtNome.disabled = true;
-            txtMaterial.disabled = true;
-            txtFamilia.disabled = true;
+            txtNota.disabled = true;
+            txtComentario.disabled = true;
+            txtGeek.disabled = true;
+            txtItemCultural.disabled = true;
             
             btnNovo.disabled = false;
             btnSalvar.disabled = true;
@@ -69,82 +106,40 @@
             btnCancelar.disabled = true;
             
             tabelaFormulario.style.display = 'none';
-            tabelaInstrumento.style.display = 'inline';
+            tabelaAvaliacao.style.display = 'inline';
             
-            listarTodosInstrumento();            
+            listarAvaliacoes();            
         }
 
-        function listarTodosInstrumento() {
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao listar Instrumento (código " + error.message + ")";
-            }
-            asyncLerProfs(preencherTabela, errorHandler);
-        }
-        
-        function preencherTabela(Instrumento) {
-            corpoTabela.innerHTML = "";
-            var n = Instrumento.length;
-            for (var i = 0; i < n; i++) {
-                let p = Instrumento[i];
-                let linha = corpoTabela.insertRow();
-                let celulaId = linha.insertCell();
-                let celulaNome = linha.insertCell();
-                let celulaMaterial = linha.insertCell();
-                let celulaFamilia = linha.insertCell();
-                
-                let alink = document.createElement('a');
-                alink.textContent = p.id;
-                alink.href = "javascript:void(0)";
-                alink.onclick =  function() { selecionarInstrumento(p.id); };
-                celulaId.appendChild(alink);
-                celulaNome.textContent = p.nome;
-                celulaMaterial.textContent = p.Material;
-                celulaFamilia.textContent = p.Familia;
-            }
-        }
-        
-        function selecionarInstrumento(id) {
-            criandoNovoInstrumento = false;
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao selecionar Instrumento (código " + error.message + ")";
-            }
-            asyncLerProfById(id, preencherFormulario, errorHandler);				
-        }
-            
-        function preencherFormulario(Instrumento) {
-            paragrafoMensagem.textContent = 'Altere e salve os dados do Instrumento, ou então apague o registro do Instrumento.'
-            txtId.value = Instrumento.id;
-            txtNome.value = Instrumento.nome;
-            txtMaterial.value = Instrumento.Material;
-            txtFamilia.value = Instrumento.Familia;
-            
-            txtId.disabled = true;
-            txtNome.disabled = false;
-            txtMaterial.disabled = false;
-            txtFamilia.disabled = false;
-            
-            btnNovo.disabled = true;
-            btnSalvar.disabled = false;
-            btnApagar.disabled = false;
-            btnCancelar.disabled = false;  
-            
-            tabelaFormulario.style.display = 'inline';
-            tabelaInstrumento.style.display = 'none';
+        // Função para listar todas as avaliações
+        function listarAvaliacoes() {
+            corpoTabela.innerHTML = ""; // Limpa a tabela
+            avaliacoes.forEach(avaliacao => {
+                const linha = corpoTabela.insertRow();
+                linha.insertCell().textContent = avaliacao.id;
+                linha.insertCell().textContent = avaliacao.nota;
+                linha.insertCell().textContent = avaliacao.comentario;
+                linha.insertCell().textContent = avaliacao.geek;
+                linha.insertCell().textContent = avaliacao.itemCultural;
+                linha.onclick = () => selecionarAvaliacao(avaliacao);
+            });
         }
 
-        function novoInstrumento() {
-            paragrafoMensagem.textContent = 'Preencha os dados do novo Instrumento...';
-            criandoNovoInstrumento = true;
+        // Função para iniciar uma nova avaliação
+        function novaAvaliacao() {
+            criandoNovaAvaliacao = true;
+            paragrafoMensagem.textContent = 'Preencha os dados da nova avaliação.';
             
             txtId.value = '';
-            txtNome.value = '';
-            txtMaterial.value = '';
-            txtFamilia.value = '';
+            txtNota.value = '';
+            txtComentario.value = '';
+            txtGeek.value = '';
+            txtItemCultural.value = '';
             
-            txtId.disabled = true;
-            txtNome.disabled = false;
-            txtMaterial.disabled = false;
-            txtFamilia.disabled = false;
+            txtNota.disabled = false;
+            txtComentario.disabled = false;
+            txtGeek.disabled = false;
+            txtItemCultural.disabled = false;
             
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
@@ -152,57 +147,74 @@
             btnCancelar.disabled = false;
             
             tabelaFormulario.style.display = 'inline';
-            tabelaInstrumento.style.display = 'none';
+            tabelaAvaliacao.style.display = 'none';
         }
-        
-        function salvarInstrumento() {
-            if (criandoNovoInstrumento) {
-                criarInstrumento();
+
+        // Função para salvar uma avaliação (nova ou existente)
+        function salvarAvaliacao() {
+            const nota = txtNota.value.trim();
+            const comentario = txtComentario.value.trim();
+            const geek = txtGeek.value.trim();
+            const itemCultural = txtItemCultural.value.trim();
+
+            if (criandoNovaAvaliacao) {
+                const novaAvaliacao = {
+                    id: avaliacoes.length + 1,
+                    nota,
+                    comentario,
+                    geek,
+                    itemCultural
+                };
+                avaliacoes.push(novaAvaliacao);
+            } else {
+                const id = parseInt(txtId.value);
+                const avaliacao = avaliacoes.find(avaliacao => avaliacao.id === id);
+                if (avaliacao) {
+                    avaliacao.nota = nota;
+                    avaliacao.comentario = comentario;
+                    avaliacao.geek = geek;
+                    avaliacao.itemCultural = itemCultural;
+                }
             }
-            else {
-                alterarInstrumento();
-            }
+            inicializar();
         }
-        
-        function criarInstrumento() {
-            const dadosInstrumento = {
-                'nome': txtNome.value,
-                'Material': txtMaterial.value,
-                'Familia': txtFamilia.value
-            };
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = 'Erro ao criar novo Instrumento (código ' + error.message + ')'; 
-            }
-            asyncCriarProf(dadosInstrumento, inicializar, errorHandler);
+
+        // Função para selecionar uma avaliação existente
+        function selecionarAvaliacao(avaliacao) {
+            criandoNovaAvaliacao = false;
+            paragrafoMensagem.textContent = 'Altere os dados e clique em Salvar ou Apagar.';
+            
+            txtId.value = avaliacao.id;
+            txtNota.value = avaliacao.nota;
+            txtComentario.value = avaliacao.comentario;
+            txtGeek.value = avaliacao.geek;
+            txtItemCultural.value = avaliacao.itemCultural;
+            
+            txtNota.disabled = false;
+            txtComentario.disabled = false;
+            txtGeek.disabled = false;
+            txtItemCultural.disabled = false;
+            
+            btnNovo.disabled = true;
+            btnSalvar.disabled = false;
+            btnApagar.disabled = false;
+            btnCancelar.disabled = false;
+            
+            tabelaFormulario.style.display = 'inline';
+            tabelaAvaliacao.style.display = 'none';
         }
-        
-        function alterarInstrumento() {
-            const errorHandler = function(error) {
-                paragrafoMensagem.textContent = 'Erro ao alterar Instrumento (código ' + error.message + ')'; 
-            }
-            const dadosInstrumento = {
-                'id': txtId.value,
-                'nome': txtNome.value,
-                'Material': txtMaterial.value,
-                'Familia': txtFamilia.value
-            };
-            asyncAlterarProf(dadosInstrumento, inicializar, errorHandler);        	
+
+        // Função para apagar uma avaliação
+        function apagarAvaliacao() {
+            const id = parseInt(txtId.value);
+            avaliacoes = avaliacoes.filter(avaliacao => avaliacao.id !== id);
+            inicializar();
         }
-        
+
+        // Função para cancelar edição ou criação
         function cancelarEdicao() {
             inicializar();
         }
-        
-        function apagarInstrumento() {
-            const id = txtId.value;
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = 'Erro ao apagar Instrumento (código ' + error.message + ')'; 
-            } 
-            asyncApagarProf(id, inicializar, errorHandler);       		
-        }
-        
-    </script>    
+    </script>
 </body>
-
 </html>
-

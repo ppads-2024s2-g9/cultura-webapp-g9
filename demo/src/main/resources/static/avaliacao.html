@@ -1,64 +1,104 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Gerenciamento de Avaliação</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Avaliações</title>
     <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
-
 <body>
-    <h1>Gerenciamento de Avaliação</h1>
+    <h1>Gerenciamento de Avaliações</h1>
 
-    <table id="tabelaFormulario">    
-        <tr> <td>ID:</td> <td><input type="text" id="txtId" disabled></td> </tr>
-        <tr> <td>Nota:</td> <td><input type="number" id="txtNota" min="0" max="10"></td> </tr>
-        <tr> <td>Comentário:</td> <td><input type="text" id="txtComentario"></td> </tr>
-        <tr> <td>Geek:</td> <td><input type="text" id="txtGeekId"></td> </tr>
-        <tr> <td>Item Cultural:</td> <td><input type="text" id="txtItemCulturalId"></td> </tr>
-        <tr><td></td><td>
-            <input type="button" value="Salvar" onclick="salvarAvaliacao()" id="btnSalvar">
-            <input type="button" value="Apagar" onclick="apagarAvaliacao()" id="btnApagar">
-            <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
-        </td></tr>
+    <!-- Formulário -->
+    <table id="tabelaFormulario" style="display: none;">    
+        <tr> 
+            <td>ID:</td> 
+            <td><input type="text" id="txtId" disabled></td> 
+        </tr>
+        <tr> 
+            <td>Nota:</td> 
+            <td><input type="number" id="txtNota" min="0" max="10"></td> 
+        </tr>
+        <tr> 
+            <td>Comentário:</td> 
+            <td><input type="text" id="txtComentario"></td> 
+        </tr>
+        <tr> 
+            <td>Geek:</td> 
+            <td><input type="text" id="txtGeek"></td> 
+        </tr>
+        <tr> 
+            <td>Item Cultural:</td> 
+            <td><input type="text" id="txtItemCultural"></td> 
+        </tr> 
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" value="Salvar" onclick="salvarAvaliacao()" id="btnSalvar">
+                <input type="button" value="Apagar" onclick="apagarAvaliacao()" id="btnApagar">
+                <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
+            </td>
+        </tr>
     </table> 
     
+    <!-- Mensagem -->
     <p style="font-weight:bold" id="paragrafoMensagem"></p>
     
+    <!-- Tabela de Avaliações -->
     <table id="tabelaAvaliacao">  
-        <tr><td><input type="button" value="Novo" onclick="novoAvaliacao()" id="btnNovo"></td> <td></td> <td></td></tr>
-        <tr> <th>ID</th> <th>Nota</th> <th>Comentário</th> <th>Geek ID</th> <th>Item Cultural ID</th> </tr>
-        <tbody id="corpoTabelaAvaliacao"> </tbody>
+        <tr>
+            <td>
+                <input type="button" value="Novo" onclick="novaAvaliacao()" id="btnNovo">
+            </td>
+            <td></td> <td></td>
+        </tr>
+        <tr> 
+            <th>ID</th> 
+            <th>Nota</th> 
+            <th>Comentário</th> 
+            <th>Geek</th> 
+            <th>Item Cultural</th> 
+        </tr>
+        <tbody id="corpoTabelaAvaliacao"></tbody>
     </table>
     
-    <script src="avaliacao-rest.js"></script>
     <script>
+        // Variáveis globais
+        let avaliacoes = []; // Lista para armazenar as avaliações
+        let criandoNovaAvaliacao = false;
+
+        // Elementos do DOM
         const tabelaAvaliacao = document.querySelector('#tabelaAvaliacao');
         const tabelaFormulario = document.querySelector('#tabelaFormulario');
         const corpoTabela = document.querySelector('#corpoTabelaAvaliacao');
         const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
         const txtNota = document.querySelector('#txtNota');
         const txtComentario = document.querySelector('#txtComentario');
-        const txtGeekId = document.querySelector('#txtGeekId');
-        const txtItemCulturalId = document.querySelector('#txtItemCulturalId');
+        const txtGeek = document.querySelector('#txtGeek');
+        const txtItemCultural = document.querySelector('#txtItemCultural');
         const txtId = document.querySelector('#txtId');
-        
         const btnNovo = document.querySelector('#btnNovo');
         const btnSalvar = document.querySelector('#btnSalvar');
         const btnApagar = document.querySelector('#btnApagar');
         const btnCancelar = document.querySelector('#btnCancelar');
-        var criandoNovaAvaliacao = false;
-        
+
         inicializar();
 
+        // Função para inicializar o estado da página
         function inicializar() {
             criandoNovaAvaliacao = false;
-            paragrafoMensagem.textContent = 'Pressione o botão Novo ou selecione uma avaliação da lista:'
+            paragrafoMensagem.textContent = 'Pressione o botão Novo ou selecione uma avaliação da lista:';
             txtId.value = '';
             txtNota.value = '';
             txtComentario.value = '';
-            txtGeekId.value = '';
-            txtItemCulturalId.value = '';
+            txtGeek.value = '';
+            txtItemCultural.value = '';
+            
+            txtId.disabled = true;
+            txtNota.disabled = true;
+            txtComentario.disabled = true;
+            txtGeek.disabled = true;
+            txtItemCultural.disabled = true;
             
             btnNovo.disabled = false;
             btnSalvar.disabled = true;
@@ -68,86 +108,38 @@
             tabelaFormulario.style.display = 'none';
             tabelaAvaliacao.style.display = 'inline';
             
-            listarTodasAvaliacoes();            
+            listarAvaliacoes();            
         }
 
-        function listarTodasAvaliacoes() {
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao listar avaliações (código " + error.message + ")";
-            }
-            asyncLerAvaliacoes(preencherTabela, errorHandler);
-        }
-        
-        function preencherTabela(avaliacoes) {
-            corpoTabela.innerHTML = "";
-            var n = avaliacoes.length;
-            for (var i = 0; i < n; i++) {
-                let a = avaliacoes[i];
-                let linha = corpoTabela.insertRow();
-                let celulaId = linha.insertCell();
-                let celulaNota = linha.insertCell();
-                let celulaComentario = linha.insertCell();
-                let celulaGeekId = linha.insertCell();
-                let celulaItemCulturalId = linha.insertCell();
-                
-                let alink = document.createElement('a');
-                alink.textContent = a.id;
-                alink.href = "javascript:void(0)";
-                alink.onclick =  function() { selecionarAvaliacao(a.id); };
-                celulaId.appendChild(alink);
-                celulaNota.textContent = a.nota;
-                celulaComentario.textContent = a.comentario;
-                celulaGeekId.textContent = a.geek.id;  // Supondo que a propriedade geek é um objeto com um id
-                celulaItemCulturalId.textContent = a.itemCultural.id;  // Supondo que a propriedade itemCultural é um objeto com um id
-            }
-        }
-        
-        function selecionarAvaliacao(id) {
-            criandoNovaAvaliacao = false;
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao selecionar avaliação (código " + error.message + ")";
-            }
-            asyncLerAvaliacaoById(id, preencherFormulario, errorHandler);				
-        }
-            
-        function preencherFormulario(avaliacao) {
-            paragrafoMensagem.textContent = 'Altere e salve os dados da avaliação, ou então apague o registro.';
-            txtId.value = avaliacao.id;
-            txtNota.value = avaliacao.nota;
-            txtComentario.value = avaliacao.comentario;
-            txtGeekId.value = avaliacao.geek.id;
-            txtItemCulturalId.value = avaliacao.itemCultural.id;
-            
-            txtId.disabled = true;
-            txtNota.disabled = false;
-            txtComentario.disabled = false;
-            txtGeekId.disabled = false;
-            txtItemCulturalId.disabled = false;
-            
-            btnNovo.disabled = true;
-            btnSalvar.disabled = false;
-            btnApagar.disabled = false;
-            btnCancelar.disabled = false;  
-            
-            tabelaFormulario.style.display = 'inline';
-            tabelaAvaliacao.style.display = 'none';
+        // Função para listar todas as avaliações
+        function listarAvaliacoes() {
+            corpoTabela.innerHTML = ""; // Limpa a tabela
+            avaliacoes.forEach(avaliacao => {
+                const linha = corpoTabela.insertRow();
+                linha.insertCell().textContent = avaliacao.id;
+                linha.insertCell().textContent = avaliacao.nota;
+                linha.insertCell().textContent = avaliacao.comentario;
+                linha.insertCell().textContent = avaliacao.geek;
+                linha.insertCell().textContent = avaliacao.itemCultural;
+                linha.onclick = () => selecionarAvaliacao(avaliacao);
+            });
         }
 
-        function novoAvaliacao() {
-            paragrafoMensagem.textContent = 'Preencha os dados da nova avaliação...';
+        // Função para iniciar uma nova avaliação
+        function novaAvaliacao() {
             criandoNovaAvaliacao = true;
+            paragrafoMensagem.textContent = 'Preencha os dados da nova avaliação.';
             
             txtId.value = '';
             txtNota.value = '';
             txtComentario.value = '';
-            txtGeekId.value = '';
-            txtItemCulturalId.value = '';
+            txtGeek.value = '';
+            txtItemCultural.value = '';
             
-            txtId.disabled = true;
             txtNota.disabled = false;
             txtComentario.disabled = false;
-            txtGeekId.disabled = false;
-            txtItemCulturalId.disabled = false;
+            txtGeek.disabled = false;
+            txtItemCultural.disabled = false;
             
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
@@ -157,59 +149,72 @@
             tabelaFormulario.style.display = 'inline';
             tabelaAvaliacao.style.display = 'none';
         }
-        
+
+        // Função para salvar uma avaliação (nova ou existente)
         function salvarAvaliacao() {
+            const nota = parseFloat(txtNota.value);
+            const comentario = txtComentario.value.trim();
+            const geek = txtGeek.value.trim();
+            const itemCultural = txtItemCultural.value.trim();
+
             if (criandoNovaAvaliacao) {
-                criarAvaliacao();
+                const novaAvaliacao = {
+                    id: avaliacoes.length + 1,
+                    nota,
+                    comentario,
+                    geek,
+                    itemCultural
+                };
+                avaliacoes.push(novaAvaliacao);
+            } else {
+                const id = parseInt(txtId.value);
+                const avaliacao = avaliacoes.find(avaliacao => avaliacao.id === id);
+                if (avaliacao) {
+                    avaliacao.nota = nota;
+                    avaliacao.comentario = comentario;
+                    avaliacao.geek = geek;
+                    avaliacao.itemCultural = itemCultural;
+                }
             }
-            else {
-                alterarAvaliacao();
-            }
+            inicializar();
         }
-        
-        function criarAvaliacao() {
-         const dadosAvaliacao = {
-        'nota': txtNota.value,
-        'comentario': txtComentario.value,
-        'geek': { 'id': txtGeekId.value },
-        'itemCultural': { 'id': txtItemCulturalId.value }
-        };
 
-    const errorHandler = function(error) { 
-        paragrafoMensagem.textContent = 'Erro ao criar nova avaliação (código ' + error.message + ')'; 
-    }
-
-    asyncCriarAvaliacao(dadosAvaliacao, inicializar, errorHandler);
-}
-
-        
-        function alterarAvaliacao() {
-            const errorHandler = function(error) {
-                paragrafoMensagem.textContent = 'Erro ao alterar avaliação (código ' + error.message + ')'; 
-            }
-            const dadosAvaliacao = {
-                'id': txtId.value,
-                'nota': txtNota.value,
-                'comentario': txtComentario.value,
-                'geek': { 'id': txtGeekId.value },
-                'itemCultural': { 'id': txtItemCulturalId.value }
-            };
-            asyncAlterarAvaliacao(dadosAvaliacao, inicializar, errorHandler);        	
+        // Função para selecionar uma avaliação existente
+        function selecionarAvaliacao(avaliacao) {
+            criandoNovaAvaliacao = false;
+            paragrafoMensagem.textContent = 'Altere os dados e clique em Salvar ou Apagar.';
+            
+            txtId.value = avaliacao.id;
+            txtNota.value = avaliacao.nota;
+            txtComentario.value = avaliacao.comentario;
+            txtGeek.value = avaliacao.geek;
+            txtItemCultural.value = avaliacao.itemCultural;
+            
+            txtNota.disabled = false;
+            txtComentario.disabled = false;
+            txtGeek.disabled = false;
+            txtItemCultural.disabled = false;
+            
+            btnNovo.disabled = true;
+            btnSalvar.disabled = false;
+            btnApagar.disabled = false;
+            btnCancelar.disabled = false;
+            
+            tabelaFormulario.style.display = 'inline';
+            tabelaAvaliacao.style.display = 'none';
         }
-        
+
+        // Função para apagar uma avaliação
+        function apagarAvaliacao() {
+            const id = parseInt(txtId.value);
+            avaliacoes = avaliacoes.filter(avaliacao => avaliacao.id !== id);
+            inicializar();
+        }
+
+        // Função para cancelar edição ou criação
         function cancelarEdicao() {
             inicializar();
         }
-        
-        function apagarAvaliacao() {
-            const id = txtId.value;
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = 'Erro ao apagar avaliação (código ' + error.message + ')'; 
-            } 
-            asyncApagarAvaliacao(id, inicializar, errorHandler);       		
-        }
-        
-    </script>    
+    </script>
 </body>
-
 </html>

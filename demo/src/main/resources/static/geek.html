@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
 <body>
-    <h1>Gerenciamento de Artistas</h1>
+    <h1>Gerenciamento de Geeks</h1>
 
     <!-- Formulário -->
     <table id="tabelaFormulario" style="display: none;">    
@@ -24,11 +24,11 @@
             <td><input type="number" id="txtNota" min="0" max="10"></td> 
         </tr>
         <tr> 
-            <td>Nacionalidade:</td> 
+            <td>Email:</td> 
             <td><input type="text" id="txtGeek"></td> 
         </tr>
         <tr> 
-            <td>Genero Musical:</td> 
+            <td>Item Cultural:</td> 
             <td><input type="text" id="txtItemCultural"></td> 
         </tr> 
         <tr>
@@ -54,15 +54,17 @@
         </tr>
         <tr> 
             <th>ID</th> 
-            <th>Ano Nascimento</th> 
             <th>Nome</th> 
-            <th>Nacionalidade</th> 
-            <th>Gênero Musical</th> 
+            <th>Ano de Nascimento</th> 
+            <th>Email</th> 
+            <th>Item Cultural</th>
+            
         </tr>
         <tbody id="corpoTabelaAvaliacao"></tbody>
     </table>
     
     <script>
+
         // Variáveis globais
         let avaliacoes = []; // Lista para armazenar as avaliações
         let criandoNovaAvaliacao = false;
@@ -210,6 +212,8 @@
             avaliacoes = avaliacoes.filter(avaliacao => avaliacao.id !== id);
             inicializar();
         }
+
+             
 
         // Função para cancelar edição ou criação
         function cancelarEdicao() {
