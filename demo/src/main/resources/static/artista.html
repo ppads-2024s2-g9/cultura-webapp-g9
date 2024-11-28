@@ -1,65 +1,104 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Artista</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Artistas</title>
     <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
-
 <body>
-    <h1>Gerenciamento de Artista</h1>
+    <h1>Gerenciamento de Avaliações</h1>
 
-    <table id="tabelaFormulario">    
-        <tr> <td>ID:</td> <td><input type="text" id="txtId"></td> </tr>
-        <tr> <td>Nome:</td> <td><input type="text" id="txtNome"></td> </tr>
-        <tr> <td>Ano Nascimento:</td> <td><input type="text" id="txtAnoNascimento"></td> </tr>
-        <tr> <td>Nacionalidade:</td> <td><input type="text" id="txtNacionalidade"></td> </tr> 
-        <tr><td></td><td>
-            <input type="button" value="Salvar" onclick="salvarArtista()" id="btnSalvar">
-            <input type="button" value="Apagar" onclick="apagarArtista()" id="btnApagar">
-            <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
-        </td></tr>
+    <!-- Formulário -->
+    <table id="tabelaFormulario" style="display: none;">    
+        <tr> 
+            <td>ID:</td> 
+            <td><input type="text" id="txtId" disabled></td> 
+        </tr>
+        <tr> 
+            <td>Nome:</td> 
+            <td><input type="text" id="txtComentario"></td> 
+        </tr>
+        <tr> 
+            <td>Ano de Nascimento:</td> 
+            <td><input type="number" id="txtNota" min="0" max="10"></td> 
+        </tr>
+        <tr> 
+            <td>Nacionalidade:</td> 
+            <td><input type="text" id="txtGeek"></td> 
+        </tr>
+        <tr> 
+            <td>Genero Musical:</td> 
+            <td><input type="text" id="txtItemCultural"></td> 
+        </tr> 
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" value="Salvar" onclick="salvarAvaliacao()" id="btnSalvar">
+                <input type="button" value="Apagar" onclick="apagarAvaliacao()" id="btnApagar">
+                <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
+            </td>
+        </tr>
     </table> 
     
+    <!-- Mensagem -->
     <p style="font-weight:bold" id="paragrafoMensagem"></p>
     
-    <table id="tabelaArtista">  
-        <tr><td><input type="button" value="Novo" onclick="novoArtista()" id="btnNovo"></td> <td></td> <td></td></tr>
-        <tr> <th>ID</th> <th>Nome</th> <th>Ano Nascimento</th> <th>Nacionalidade</th> </tr>
-        <tbody id="corpoTabelaArtista"> </tbody>
+    <!-- Tabela de Avaliações -->
+    <table id="tabelaAvaliacao">  
+        <tr>
+            <td>
+                <input type="button" value="Novo" onclick="novaAvaliacao()" id="btnNovo">
+            </td>
+            <td></td> <td></td>
+        </tr>
+        <tr> 
+            <th>ID</th> 
+            <th>Nome</th> 
+            <th>Ano de Nascimento</th> 
+            <th>Nacionalidade</th> 
+            <th>Gênero Musical</th> 
+        </tr>
+        <tbody id="corpoTabelaAvaliacao"></tbody>
     </table>
     
-    <script src="artista-rest.js"></script>
     <script>
-        const tabelaArtista = document.querySelector('#tabelaArtista');
+        // Variáveis globais
+        let avaliacoes = []; // Lista para armazenar as avaliações
+        let criandoNovaAvaliacao = false;
+
+        // Elementos do DOM
+        const tabelaAvaliacao = document.querySelector('#tabelaAvaliacao');
         const tabelaFormulario = document.querySelector('#tabelaFormulario');
-        const corpoTabela = document.querySelector('#corpoTabelaArtista');
+        const corpoTabela = document.querySelector('#corpoTabelaAvaliacao');
         const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
-        const txtNome = document.querySelector('#txtNome');
-        const txtAnoNascimento = document.querySelector('#txtAnoNascimento');
-        const txtNacionalidade = document.querySelector('#txtNacionalidade');
+        const txtNota = document.querySelector('#txtNota');
+        const txtComentario = document.querySelector('#txtComentario');
+        const txtGeek = document.querySelector('#txtGeek');
+        const txtItemCultural = document.querySelector('#txtItemCultural');
         const txtId = document.querySelector('#txtId');
-        
         const btnNovo = document.querySelector('#btnNovo');
         const btnSalvar = document.querySelector('#btnSalvar');
         const btnApagar = document.querySelector('#btnApagar');
         const btnCancelar = document.querySelector('#btnCancelar');
-        var criandoNovoArtista = false;
-        
+
         inicializar();
 
+        // Função para inicializar o estado da página
         function inicializar() {
-            criandoNovoArtista = false;
-            paragrafoMensagem.textContent = 'Pressione o botão Novo ou selecione um artista da lista:'
+            criandoNovaAvaliacao = false;
+            paragrafoMensagem.textContent = 'Pressione o botão Novo:';
             txtId.value = '';
-            txtNome.value = '';
-            txtAnoNascimento.value = '';
-            txtNacionalidade.value = '';
+            txtNota.value = '';
+            txtComentario.value = '';
+            txtGeek.value = '';
+            txtItemCultural.value = '';
+            
             txtId.disabled = true;
-            txtNome.disabled = true;
-            txtAnoNascimento.disabled = true;
-            txtNacionalidade.disabled = true;
+            txtNota.disabled = true;
+            txtComentario.disabled = true;
+            txtGeek.disabled = true;
+            txtItemCultural.disabled = true;
             
             btnNovo.disabled = false;
             btnSalvar.disabled = true;
@@ -67,82 +106,40 @@
             btnCancelar.disabled = true;
             
             tabelaFormulario.style.display = 'none';
-            tabelaArtista.style.display = 'inline';
+            tabelaAvaliacao.style.display = 'inline';
             
-            listarTodosArtista();            
+            listarAvaliacoes();            
         }
 
-        function listarTodosArtista() {
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao listar artistas (código " + error.message + ")";
-            }
-            asyncLerProfs(preencherTabela, errorHandler);
-        }
-        
-        function preencherTabela(artistaes) {
-            corpoTabela.innerHTML = "";
-            var n = artistaes.length;
-            for (var i = 0; i < n; i++) {
-                let p = artistaes[i];
-                let linha = corpoTabela.insertRow();
-                let celulaId = linha.insertCell();
-                let celulaNome = linha.insertCell();
-                let celulaAnoNascimento = linha.insertCell();
-                let celulaNacionalidade = linha.insertCell();
-                
-                let alink = document.createElement('a');
-                alink.textContent = p.id;
-                alink.href = "javascript:void(0)";
-                alink.onclick =  function() { selecionarArtista(p.id); };
-                celulaId.appendChild(alink);
-                celulaNome.textContent = p.nome;
-                celulaAnoNascimento.textContent = p.anoNascimento;
-                celulaNacionalidade.textContent = p.nacionalidade;
-            }
-        }
-        
-        function selecionarArtista(id) {
-            criandoNovoArtista = false;
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = "Erro ao selecionar artista (código " + error.message + ")";
-            }
-            asyncLerProfById(id, preencherFormulario, errorHandler);				
-        }
-            
-        function preencherFormulario(artista) {
-            paragrafoMensagem.textContent = 'Altere e salve os dados do artista, ou então apague o registro do artista.'
-            txtId.value = artista.id;
-            txtNome.value = artista.nome;
-            txtAnoNascimento.value = artista.anoNascimento;
-            txtNacionalidade.value = artista.nacionalidade;
-            
-            txtId.disabled = true;
-            txtNome.disabled = false;
-            txtAnoNascimento.disabled = false;
-            txtNacionalidade.disabled = false;
-            
-            btnNovo.disabled = true;
-            btnSalvar.disabled = false;
-            btnApagar.disabled = false;
-            btnCancelar.disabled = false;  
-            
-            tabelaFormulario.style.display = 'inline';
-            tabelaArtista.style.display = 'none';
+        // Função para listar todas as avaliações
+        function listarAvaliacoes() {
+            corpoTabela.innerHTML = ""; // Limpa a tabela
+            avaliacoes.forEach(avaliacao => {
+                const linha = corpoTabela.insertRow();
+                linha.insertCell().textContent = avaliacao.id;
+                linha.insertCell().textContent = avaliacao.nota;
+                linha.insertCell().textContent = avaliacao.comentario;
+                linha.insertCell().textContent = avaliacao.geek;
+                linha.insertCell().textContent = avaliacao.itemCultural;
+                linha.onclick = () => selecionarAvaliacao(avaliacao);
+            });
         }
 
-        function novoArtista() {
-            paragrafoMensagem.textContent = 'Preencha os dados do novo artista...';
-            criandoNovoArtista = true;
+        // Função para iniciar uma nova avaliação
+        function novaAvaliacao() {
+            criandoNovaAvaliacao = true;
+            paragrafoMensagem.textContent = 'Preencha os dados da nova avaliação.';
             
             txtId.value = '';
-            txtNome.value = '';
-            txtAnoNascimento.value = '';
-            txtNacionalidade.value = '';
+            txtNota.value = '';
+            txtComentario.value = '';
+            txtGeek.value = '';
+            txtItemCultural.value = '';
             
-            txtId.disabled = true;
-            txtNome.disabled = false;
-            txtAnoNascimento.disabled = false;
-            txtNacionalidade.disabled = false;
+            txtNota.disabled = false;
+            txtComentario.disabled = false;
+            txtGeek.disabled = false;
+            txtItemCultural.disabled = false;
             
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
@@ -150,57 +147,74 @@
             btnCancelar.disabled = false;
             
             tabelaFormulario.style.display = 'inline';
-            tabelaArtista.style.display = 'none';
+            tabelaAvaliacao.style.display = 'none';
         }
-        
-        function salvarArtista() {
-            if (criandoNovoArtista) {
-                criarArtista();
+
+        // Função para salvar uma avaliação (nova ou existente)
+        function salvarAvaliacao() {
+            const nota = parseFloat(txtNota.value);
+            const comentario = txtComentario.value.trim();
+            const geek = txtGeek.value.trim();
+            const itemCultural = txtItemCultural.value.trim();
+
+            if (criandoNovaAvaliacao) {
+                const novaAvaliacao = {
+                    id: avaliacoes.length + 1,
+                    nota,
+                    comentario,
+                    geek,
+                    itemCultural
+                };
+                avaliacoes.push(novaAvaliacao);
+            } else {
+                const id = parseInt(txtId.value);
+                const avaliacao = avaliacoes.find(avaliacao => avaliacao.id === id);
+                if (avaliacao) {
+                    avaliacao.nota = nota;
+                    avaliacao.comentario = comentario;
+                    avaliacao.geek = geek;
+                    avaliacao.itemCultural = itemCultural;
+                }
             }
-            else {
-                alterarArtista();
-            }
+            inicializar();
         }
-        
-        function criarArtista() {
-            const dadosArtista = {
-                'nome': txtNome.value,
-                'anoNascimento': txtAnoNascimento.value,  // Alterado para anoNascimento
-                'nacionalidade': txtNacionalidade.value   // Alterado para nacionalidade
-            };
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = 'Erro ao criar novo artista (código ' + error.message + ')'; 
-            }
-            console.log('Dados enviados:', dadosArtista);
-            asyncCriarProf(dadosArtista, inicializar, errorHandler);
+
+        // Função para selecionar uma avaliação existente
+        function selecionarAvaliacao(avaliacao) {
+            criandoNovaAvaliacao = false;
+            paragrafoMensagem.textContent = 'Altere os dados e clique em Salvar ou Apagar.';
+            
+            txtId.value = avaliacao.id;
+            txtNota.value = avaliacao.nota;
+            txtComentario.value = avaliacao.comentario;
+            txtGeek.value = avaliacao.geek;
+            txtItemCultural.value = avaliacao.itemCultural;
+            
+            txtNota.disabled = false;
+            txtComentario.disabled = false;
+            txtGeek.disabled = false;
+            txtItemCultural.disabled = false;
+            
+            btnNovo.disabled = true;
+            btnSalvar.disabled = false;
+            btnApagar.disabled = false;
+            btnCancelar.disabled = false;
+            
+            tabelaFormulario.style.display = 'inline';
+            tabelaAvaliacao.style.display = 'none';
         }
-        
-        function alterarArtista() {
-            const errorHandler = function(error) {
-                paragrafoMensagem.textContent = 'Erro ao alterar artista (código ' + error.message + ')'; 
-            }
-            const dadosArtista = {
-                'id': txtId.value,
-                'nome': txtNome.value,
-                'anoNascimento': txtAnoNascimento.value,  // Alterado para anoNascimento
-                'nacionalidade': txtNacionalidade.value   // Alterado para nacionalidade
-            };
-            asyncAlterarProf(dadosArtista, inicializar, errorHandler);        	
+
+        // Função para apagar uma avaliação
+        function apagarAvaliacao() {
+            const id = parseInt(txtId.value);
+            avaliacoes = avaliacoes.filter(avaliacao => avaliacao.id !== id);
+            inicializar();
         }
-        
+
+        // Função para cancelar edição ou criação
         function cancelarEdicao() {
             inicializar();
         }
-        
-        function apagarArtista() {
-            const id = txtId.value;
-            const errorHandler = function(error) { 
-                paragrafoMensagem.textContent = 'Erro ao apagar artista (código ' + error.message + ')'; 
-            } 
-            asyncApagarProf(id, inicializar, errorHandler);       		
-        }
-        
-    </script>    
+    </script>
 </body>
-
 </html>
