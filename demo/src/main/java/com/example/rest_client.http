@@ -1,0 +1,11 @@
+// GET http://localhost:8080/api/artista
+
+POST http://localhost:8080/api/artista
+User-Agent: rest-client
+Content-Type: application/json
+
+{ 
+    "nome":"Marcos",
+    "anoNasc":"1997",
+    "nacionalidade":"Brasileiro"
+}
