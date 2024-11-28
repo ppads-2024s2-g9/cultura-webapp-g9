@@ -63,6 +63,11 @@
     </table>
     
     <script>
+
+            var token = localStorage.getItem('token');
+            if (!token) {
+                window.location.replace("/html/login.html");
+            }
         // Variáveis globais
         let avaliacoes = []; // Lista para armazenar as avaliações
         let criandoNovaAvaliacao = false;
@@ -210,6 +215,11 @@
             avaliacoes = avaliacoes.filter(avaliacao => avaliacao.id !== id);
             inicializar();
         }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.replace("/html/login.html");
+        }        
 
         // Função para cancelar edição ou criação
         function cancelarEdicao() {
